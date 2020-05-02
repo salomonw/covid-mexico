@@ -10,6 +10,8 @@ from sklearn import linear_model
 from sklearn.model_selection import StratifiedKFold
 from sklearn.feature_selection import RFECV
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import preprocessing
 import numpy as np
 from sklearn.svm import LinearSVC
 import warnings
@@ -156,10 +158,23 @@ def classify_xgboost(dftrain, dftest, y_train,
     y_pred = y_pred[1]
 
     xgb.plot_importance(model)
+
+    plt.title('')
+    plt.ylabel('')
     plt.tight_layout()
     plt.savefig(out_dir+'/'+ name+ '_f-score.pdf')
+    plt.savefig(out_dir + '/' + name + '_f-score.png')
     plt.close()
-    return y_test, y_pred
+
+    coeff =  model.feature_importances_
+    coeffs = {}
+    i=0
+    for col in list(dftrain):
+        coeffs[col] = [coeff[i]]
+        i += 1
+    coeffs = pd.DataFrame.from_dict(coeffs)
+
+    return y_test, y_pred, coeffs
 
 
 def get_roc_curve(y_test, probs):
@@ -200,7 +215,7 @@ def find_correleted_var(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, N
 
     for i in range(len(correlated_matrix.columns)):
         for j in range(i):
-            if abs(correlated_matrix.iloc[i, j]) > 1.9:
+            if abs(correlated_matrix.iloc[i, j]) > 0.8:
                 colname = correlated_matrix.columns[i]
                 correlated_features.add(colname)
     return df, dftest,  correlated_features
@@ -208,11 +223,18 @@ def find_correleted_var(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, N
 
 
 
-def feature_elimination(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, NUMERIC_COLUMNS):
+def feature_elimination(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, NUMERIC_COLUMNS, out_dir, name):
     #dftrainC, dftestC, corr_vars = find_correleted_var(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS,
     #                                                   NUMERIC_COLUMNS)
     dftrainC, dftestC,  correlated_features = find_correleted_var(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, NUMERIC_COLUMNS)
-    for i in list(dftrainC):
+    #print(correlated_features)
+    #for i in correlated_features:
+    #    dftrainC.drop(i, axis=1, inplace=True)
+    #    dftestC.drop(i, axis=1, inplace=True)
+
+
+    #'''
+    for i in list(dftrainC):  
         if '97' in i:
             dftrainC.drop(i, axis=1, inplace=True)
         elif '98' in i:
@@ -226,30 +248,88 @@ def feature_elimination(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, N
             dftestC.drop(i, axis=1, inplace=True)
         elif '99' in i:
             dftestC.drop(i, axis=1, inplace=True)
+    #'''
     categ = list(dftrainC)
     for i in NUMERIC_COLUMNS:
         categ.remove(i)
+
+    X = dftrainC
+    y1 = y_train
+
+    rfc = LogisticRegression(penalty='l1', solver='saga')
+
+    rfecv = RFECV(estimator=rfc, step=1, cv=StratifiedKFold(10), scoring='roc_auc')
+    rfecv.fit(X,y1)
+
+    plt.figure(figsize=(4,4))
+    #plt.title('Recursive FE with Cross-Validation', fontsize=18, fontweight='bold', pad=20)
+    plt.xlabel('Number of features selected', fontsize=14, labelpad=20)
+    plt.ylabel('AUC', fontsize=14, labelpad=20)
+    plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_, color='#303F9F', linewidth=3)
+    plt.xlim(len(X.T), 1)
+    plt.grid(True)
+    plt.tight_layout()
+    #print(out_dir + name)
+    plt.savefig(out_dir + "/" + str(name) + '_FE.pdf')
+    plt.savefig(out_dir + "/" + str(name) + '_FE.png')
     return dftrainC, dftestC, categ
 
 
-
+#from sklearn import metrics, cross_validation
+#scores = .cross_val_score(logreg, X, y, cv=10)
+from sklearn.calibration import CalibratedClassifierCV
 
 def classify_sklearn(dftrain, dftest, y_train, y_test,
                      CATEGORICAL_COLUMNS, NUMERIC_COLUMNS,
                      method):
     if method=='skl-SVM-l1':
-        clf = svm.SVC(probability=True, kernel='linear')#, max_iter=10000)
+        #clf = svm.SVC(probability=True, kernel='linear')#, max_iter=10000)
+        clf1 = LinearSVC(penalty='l1',dual=False, max_iter=10000)
+        clf = CalibratedClassifierCV(clf1, cv=StratifiedKFold(10))
+
+        clf.fit(dftrain, y_train)
+
+        coef_avg = 0
+        for i in clf.calibrated_classifiers_:
+            coef_avg = coef_avg + i.base_estimator.coef_
+        coeff = coef_avg / len(clf.calibrated_classifiers_)
+
+        i = 0
+        coeffs = {}
+        for col in list(dftrain):
+            coeffs[col] = [coeff[0][i]]
+            i += 1
+        coeffs = pd.DataFrame.from_dict(coeffs)
+
+
     if method == 'skl-LR-l1':
-        clf = linear_model.LogisticRegression(penalty='l1', solver='saga', max_iter=10000)
-    clf.fit(dftrain, y_train)
-    coeff = clf.coef_
-    i = 0
-    coeffs = {}
-    for col in list(dftrain):
-        coeffs[col] = [coeff[0][i]]
-        i += 1
-    coeffs = pd.DataFrame.from_dict(coeffs)
+        clf = linear_model.LogisticRegressionCV(#cv=5,#StratifiedKFold(10),
+                                                penalty='l1',
+                                                dual=False,
+                                                solver='saga',
+                                                max_iter=10000)
+        clf = linear_model.LogisticRegression(penalty='l1',
+                                                dual=False,
+                                                solver='saga',
+                                                max_iter=10000)
+        clf.fit(dftrain, y_train)
+        coeff = clf.coef_
+        i = 0
+        coeffs = {}
+        for col in list(dftrain):
+            coeffs[col] = [coeff[0][i]]
+            i += 1
+        coeffs = pd.DataFrame.from_dict(coeffs)
+
+
+    if method == 'skl-RF':
+        clf = RandomForestClassifier(n_estimators=100, criterion='gini', max_depth=4)
+        clf.fit(dftrain, y_train)
+        coeffs = {}
+
+
     y_pred = [i[1] for i in clf.predict_proba(dftest)]
+
     return y_test, y_pred, coeffs
 
 
@@ -270,14 +350,14 @@ def run_classification_experiment(dftrain, dftest, y_train,
     eval_input_fn = make_input_fn(dftest, y_test,  num_epochs=1, batch_size=len(y_test), shuffle=False)
 
 
-    plt.figure()
+    plt.figure(figsize=(4,4))
 
     df_result = {}
     coeffs_df = pd.DataFrame()
 
-    for method in ['skl-LR-l1', 'xgboost', 'LC', 'Boosting']:#, 'CART', 'DNN', 'skl-SVM-l1']:
+    for method in ['skl-SVM-l1', 'skl-LR-l1', 'skl-RF', 'xgboost']:#, 'LC', 'Boosting']:#, 'CART', 'DNN', 'skl-SVM-l1']:
         if method == 'xgboost':
-            y_test, probs = classify_xgboost(dftrain, dftest, y_train,
+            y_test, probs, coeff = classify_xgboost(dftrain, dftest, y_train,
                                                  y_test, name=name, out_dir=out_dir)
         elif 'skl' in method:
             y_test, probs, coeff = classify_sklearn(dftrain=dftrain,
@@ -292,7 +372,7 @@ def run_classification_experiment(dftrain, dftest, y_train,
                                                     method=method, max_steps=max_steps)
 
         fpr, tpr = get_roc_curve(y_test, probs)
-        plt.plot(fpr, tpr, label=method)
+        plt.plot(fpr, tpr, label=method.replace('skl-',''))
 
         if method == 'LC':
             coeff = pd.DataFrame.from_dict(coeff).T
@@ -302,17 +382,26 @@ def run_classification_experiment(dftrain, dftest, y_train,
 
         elif method == 'skl-LR-l1':
             coeff = pd.DataFrame.from_dict(coeff).T
-            coeff = coeff.rename(columns={0: 'LR'})
+            coeff = coeff.rename(columns={0: 'LR-l1'})
             coeffs_df = pd.concat([coeffs_df, coeff], axis=1, sort=True)
 
         elif method == 'skl-SVM-l1':
             coeff = pd.DataFrame.from_dict(coeff).T
-            coeff = coeff.rename(columns={0: 'SVM'})
+            coeff = coeff.rename(columns={0: 'SVM-l1'})
             coeffs_df = pd.concat([coeffs_df, coeff], axis=1, sort=True)
 
+        elif method == 'xgboost':
+            coeff = pd.DataFrame.from_dict(coeff).T
+            coeff = coeff.rename(columns={0: 'xgboost'})
+            coeffs_df = pd.concat([coeffs_df, coeff], axis=1, sort=True)
+
+
+
+
         df_result[method] = get_metrics(y_test, probs)
+
     coeffs_df = coeffs_df.round(3)
-    coeffs_df = coeffs_df.sort_values(by=['LR'], ascending = False)
+    coeffs_df = coeffs_df.sort_values(by=['LR-l1'], ascending = False)
 
     coeffs_df = coeffs_df.T
     col_d = {i:i.split("_1")[0] for i in list(coeffs_df)}
@@ -343,12 +432,20 @@ def run_classification_experiment(dftrain, dftest, y_train,
     coeffs_df = coeffs_df.rename(columns=col_d)
     coeffs_df = coeffs_df.rename(columns=feature_translate)
 
+    coeffs_df = coeffs_df.T
+
+    coeffs_df['LR-l1'] = coeffs_df['LR-l1'] / (coeffs_df['LR-l1'].abs().max())
+    coeffs_df['SVM-l1'] = coeffs_df['SVM-l1'] / (coeffs_df['SVM-l1'].abs().max())
+    #coeffs_df['xgboost'] = coeffs_df['xgboost'] / (coeffs_df['xgboost'].abs().max())
+    coeffs_df = coeffs_df.round(3)
     coeffs_df.to_latex(out_dir + "/" + str(name) + '_coeffs.tex')
+    coeffs_df.to_csv(out_dir + "/" + str(name) + '_coeffs.csv')
 
     df_result = pd.DataFrame(df_result)
     df_result = df_result.round(3)
+    print(df_result)
 
-    plt.title('ROC curve (' + str(name) + ',' + str(len(y_train)) +')')
+    #plt.title('ROC curve (' + str(name) + ',' + str(len(y_train)) +')')
     plt.xlabel('false positive rate')
     plt.ylabel('true positive rate')
     plt.plot([0, 1], [0, 1], color='k')
@@ -356,12 +453,15 @@ def run_classification_experiment(dftrain, dftest, y_train,
     plt.ylim(0, 1)
     plt.grid(True)
     plt.legend(loc=4)
+    plt.tight_layout()
+    plt.savefig(out_dir + "/" + str(name) + '.png')
     plt.savefig(out_dir +"/"+ str(name)+'.pdf')
 
     df_result.to_latex(out_dir +"/"+ str(name) + '.tex')
+    df_result.to_csv(out_dir + "/" + str(name) + '.csv')
     plt.close('all')
-    coeff_LC= coeff_LC.round(3)
-    coeff_LC.to_latex(out_dir +"/"+ str(name) + '_coeffs_LC.tex')
+    coeff_LC= {}
+    #coeff_LC.to_latex(out_dir +"/"+ str(name) + '_coeffs_LC.tex')
     return  df_result.T, coeff_LC
 
 
@@ -394,7 +494,7 @@ def run_recursive_feature_elimination(dftrain, ytrain, y, CATEGORICAL_COLUMNS, N
 
     rfc = LogisticRegression(penalty='l1', solver='saga')
 
-    rfecv = RFECV(estimator=rfc, step=1, cv=StratifiedKFold(10))
+    rfecv = RFECV(estimator=rfc, step=1, cv=StratifiedKFold(10), scoring='roc_auc')
     rfecv.fit(X,y1)
 
     plt.figure(figsize=(16, 9))
@@ -405,4 +505,5 @@ def run_recursive_feature_elimination(dftrain, ytrain, y, CATEGORICAL_COLUMNS, N
     plt.grid(True)
     print(out_dir + name)
     plt.savefig(out_dir + name + '.pdf')
+    plt.savefig(out_dir + name + '.png')
     return correlated_features
