@@ -1,0 +1,16 @@
+,SVM-l1,LR-l1,xgboost
+Pneumonia,1.0,1.0,0.281
+Pregnant,0.711,0.465,0.0
+Age,0.417,0.292,0.081
+Other,0.31,0.208,0.044
+Asthma,0.235,0.133,0.0
+Cardiovascular Disease,0.225,0.125,0.033
+Obesity ,0.176,0.124,0.062
+Immunosuppression,0.118,0.059,0.102
+Hypertension,0.021,0.013,0.0
+Diabetes,-0.005,0.0,0.039
+Tobacco Use,-0.08,-0.051,0.002
+COPD,-0.144,-0.084,0.104
+Chronic Renal Insufficiency,-0.176,-0.109,0.089
+Gender,-0.23,-0.167,0.059
+RESULTADO_3,-0.455,-0.357,0.105
