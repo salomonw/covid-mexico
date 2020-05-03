@@ -12,15 +12,8 @@ Personalized models that predict the following events: (1) hospitalization, (2) 
     - To use: `sudo sh run_local.sh` 
 - To build local:
     - Requirements:
-        - python3
-        - numpy
-        - pandas
-        - matplotlib
-        - seaborn
-        - sklearn
-        - tensorflow
-        - xgboost
-        - datetime
+        - python3: 
+            - numpy, pandas, matplotlib, seaborn, sklearn, tensorflow, xgboost, datetime.
     - To use:
         - run `python3 experiments/run_experiment.py`
 - see results on the `results` directory
