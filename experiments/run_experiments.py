@@ -265,6 +265,7 @@ import data_analysis as DA
 
 # Specify file name
 fname = "data/200501COVID19MEXICO.csv"
+
 feature_translate = {
         'SEXO': 'Gender',
         'EMBARAZO': 'Pregnant',
