@@ -31,6 +31,20 @@ import tensorflow as tf
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
 def one_hot_cat_column(feature_name, vocab):
+    """
+    Create one hot encoding for a tf classification task
+
+    Parameters
+    ----------
+
+    feature_name: feature of interest
+    vocab: the list of categories in the feature
+
+    Returns
+    -------
+    a tf column object
+
+    """
     return tf.feature_column.indicator_column(tf.feature_column.categorical_column_with_vocabulary_list(feature_name, vocab))
 
 
