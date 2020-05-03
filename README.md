@@ -9,7 +9,7 @@ Personalized models that predict the following events: (1) hospitalization, (2) 
 ## Install and use:
 - For docker users 
     - To build: `sudo docker build . -t covid_mex`
-    - To run container: `sudo sh run_local.sh` 
+    - To use: `sudo sh run_local.sh` 
 - To build local:
     - Requirements:
         - numpy
