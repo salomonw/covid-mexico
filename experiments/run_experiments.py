@@ -264,7 +264,7 @@ os.mkdir('results/'+ts)
 import data_analysis as DA
 
 # Specify file name
-fname = "data/200501COVID19MEXICO.csv"
+fname = "data/200503COVID19MEXICO.csv"
 
 feature_translate = {
         'SEXO': 'Gender',
