@@ -3,7 +3,7 @@ Personalized models that predict the following events: (1) hospitalization, (2) 
 
 ## Publication:
 - S. Wolllenstein-Betech, C.G. Cassandras, I.Ch. Paschalidis. 
-***"Personalized Predictive Models for Symptomatic COVID-19 Patients Using Basic Preconditions: Hospitalizations, Mortality, and the Need for an ICU or Ventilator."*** (2020).  To appear  
+***"Personalized Predictive Models for Symptomatic COVID-19 Patients Using Basic Preconditions: Hospitalizations, Mortality, and the Need for an ICU or Ventilator."*** (2020).*Under Review* 
 
 
 ## Install and use:
