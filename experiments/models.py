@@ -407,7 +407,7 @@ def run_classification_experiment(dftrain, dftest, y_train,
         elif method == 'xgboost':
             coeff = pd.DataFrame.from_dict(coeff).T
             coeff = coeff.rename(columns={0: 'xgboost'})
-            coeffs_df = pd.concat([coeffs_df, coeff], axis=1, sort=True)
+            #coeffs_df = pd.concat([coeffs_df, coeff], axis=1, sort=True)
 
 
 
