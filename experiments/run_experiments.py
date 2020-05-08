@@ -262,9 +262,11 @@ ts = ts_obj.strftime("%d-%b-%Y_%H-%M-%S")
 os.mkdir('results/'+ts)
 
 import data_analysis as DA
-
+import glob
+import os
 # Specify file name
 fname = "data/200506COVID19MEXICO.csv"
+fname = max(glob.glob("data//*.csv") , key = os.path.getctime)
 
 feature_translate = {
         'SEXO': 'Gender',
