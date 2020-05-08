@@ -15,9 +15,13 @@ Personalized models that predict the following events: (1) hospitalization, (2) 
         - python3: 
             - numpy, pandas, matplotlib, seaborn, sklearn, tensorflow, xgboost, datetime.
     - To use:
-        - run `python3 experiments/run_experiment.py`
-- see results on the `results` directory
-- to update data file, change lin `267` in `experiments/run_experiment.py`
+        - Do:
+            - run `python3 experiments/run_experiment.py`
+            - see results on the `results` directory
+            - to update data file, change lin `267` in `experiments/run_experiment.py`
+        - Or:
+            - run `sh update_results.sh`
+        
 ## Abstract
 *Background:* 
 The rapid global spread of the virus SARS-CoV-2 has provoked a spike in demand for hospital care. Hospital systems across the world have been over-extended, including in Northern Italy, Ecuador, and New York City, and many other systems face similar challenges. As a result, decisions on how to best allocate very limited medical resources have come to the forefront. Specifically, under consideration are decisions on who to test, who to admit into hospitals, who to treat in an Intensive Care Unit (ICU), and who to support with a ventilator. Given today’s ability to gather, share, analyze and process data, personalized predictive models based on demographics and information regarding prior conditions can be used to (1) help decision-makers allocate limited resources, when needed, (2) advise individuals how to better protect themselves given their risk profile, (3) differentiate social distancing guidelines based on risk, and (4) prioritize vaccinations once a vaccine becomes available. 
