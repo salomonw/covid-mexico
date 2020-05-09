@@ -89,12 +89,6 @@ def read_data(fname, y, percentage_train=0.7, additional_vars=False, waiting=Tru
         df = df[df['NEUMONIA'] < 3]
         df['NEUMONIA'] = df['NEUMONIA'].replace(2,0)
 
-
-    age_groups = [i*5 for i in range(20)]
-    for i in range(len(age_groups)-1):
-        df[str(age_groups[i])+'-'+str(age_groups[i+1])] = 0
-        df[str(age_groups[i]) + '-' + str(age_groups[i + 1])] = d
-
     if additional_vars != False:
         for vars in additional_vars:
             CATEGORICAL_COLUMNS.append(vars)
