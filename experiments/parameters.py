@@ -51,7 +51,7 @@ def read_data(fname, y, percentage_train=0.7, additional_vars=False, waiting=Tru
                             #'FECHA_DEF',
                             #'INTUBADO',
                             #'NEUMONIA',
-                            #'EDAD'
+                            'EDAD'
                             #'NACIONALIDAD',
                             #'EMBARAZO',
                             #'HABLA_LENGUA_INDI',
