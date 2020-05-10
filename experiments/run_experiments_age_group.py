@@ -2,7 +2,7 @@ import parameters as parameters
 import models as models
 import glob
 import os
-
+from datetime import datetime
 
 def run_model(y, fname, name, out_dir,  waiting, hosp=False,  add_vars=False, max_steps=10000):
     if add_vars != False:
@@ -28,10 +28,8 @@ def run_model(y, fname, name, out_dir,  waiting, hosp=False,  add_vars=False, ma
 
     [dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, NUMERIC_COLUMNS] = data
 
-
     ## Feature elimination and dataset structure
     dftrain, dftest, CATEGORICAL_COLUMNS = models.feature_elimination(dftrain, dftest, y_train, y_test, CATEGORICAL_COLUMNS, NUMERIC_COLUMNS, out_dir=out_dir, name=name)
-
 
 
     res, coeff_LC = models.run_classification_experiment(dftrain, dftest, y_train, y_test,
