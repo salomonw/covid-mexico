@@ -54,23 +54,23 @@ def run_exp_2(fname):
 
     out_dir = 'results/' + ts + '/PredictiveModels/Deaths'
     os.mkdir(out_dir)
-    c = run_model(y='deaths', fname=fname, name='Y-W-0', out_dir=out_dir, waiting=True, hosp=True, add_vars=['RESULTADO'])
+    c = run_model(y='deaths', fname=fname, name='Y-W-0', out_dir=out_dir, waiting=False, hosp=True, add_vars=['RESULTADO'])
     coeff_LC.extend(c)
-    c = run_model(y='deaths', fname=fname, name='Y-W-1', out_dir=out_dir, waiting=True, hosp=True, add_vars=['RESULTADO', 'NEUMONIA', 'INTUBADO', 'UCI'])
+    c = run_model(y='deaths', fname=fname, name='Y-W-1', out_dir=out_dir, waiting=False, hosp=True, add_vars=['RESULTADO', 'NEUMONIA', 'INTUBADO', 'UCI'])
     coeff_LC.extend(c)
 
     out_dir = 'results/' + ts + '/PredictiveModels/ICU'
     os.mkdir(out_dir)
-    c = run_model(y='icu', fname=fname, name='Y-W-0', out_dir=out_dir, waiting=True, hosp=True, add_vars=['RESULTADO'])
+    c = run_model(y='icu', fname=fname, name='Y-W-0', out_dir=out_dir, waiting=False, hosp=True, add_vars=['RESULTADO'])
     coeff_LC.extend(c)
-    c = run_model(y='icu', fname=fname, name='Y-W-1', out_dir=out_dir, waiting=True, hosp=True, add_vars=['RESULTADO', 'NEUMONIA'])
+    c = run_model(y='icu', fname=fname, name='Y-W-1', out_dir=out_dir, waiting=False, hosp=True, add_vars=['RESULTADO', 'NEUMONIA'])
     coeff_LC.extend(c)
 
     out_dir = 'results/' + ts + '/PredictiveModels/Vent'
     os.mkdir(out_dir)
-    c = run_model(y='vent', fname=fname, name='Y-W-0', out_dir=out_dir, waiting=True, hosp=True, add_vars=['RESULTADO'])
+    c = run_model(y='vent', fname=fname, name='Y-W-0', out_dir=out_dir, waiting=False, hosp=True, add_vars=['RESULTADO'])
     coeff_LC.extend(c)
-    c = run_model(y='vent', fname=fname, name='Y-W-1', out_dir=out_dir, waiting=True, hosp=True, add_vars=['RESULTADO', 'NEUMONIA', 'UCI'])
+    c = run_model(y='vent', fname=fname, name='Y-W-1', out_dir=out_dir, waiting=False, hosp=True, add_vars=['RESULTADO', 'NEUMONIA', 'UCI'])
     coeff_LC.extend(c)
 
 
