@@ -120,7 +120,7 @@ def run_model(y, fname, name, out_dir,  waiting, hosp=False,  add_vars=False, ma
         y_spanish = 'NEUMONIA'
 
     data = parameters.read_data(fname=fname, y=y_spanish,
-                                percentage_train=0.8,
+                                percentage_train=0.70,
                                 additional_vars=add_vars,
                                 waiting=waiting,
                                 hosp=hosp)
