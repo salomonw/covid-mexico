@@ -95,7 +95,7 @@ def run(fname, out_dir):
     ## Cuanto tiempo tarda en responder la gente?
     plt.figure(figsize=(4,4))
     df2 = df.copy()
-    df2 = df2[df2[(df0.TIPO_PACIENTE==2)]]
+    df2 = df2[df2[(df2.TIPO_PACIENTE==2)]]
     df2['F'] = df.FECHA_INGRESO - df.FECHA_SINTOMAS
     df2 = df2[(df2.F.dt.days>=0) & (df2.F.dt.days<=30)]
     ax = hisogram_per_age(df2, 30, 50, color='orange')
