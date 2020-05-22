@@ -1,0 +1,16 @@
+,SVM-l1,LR-l1
+Pneumonia,1.0,1.0
+Pregnant,0.376,0.27
+Obesity ,0.264,0.188
+Asthma,0.264,0.182
+Other,0.197,0.142
+Cardiovascular Disease,0.101,0.065
+Hypertension,0.073,0.054
+Diabetes,0.039,0.03
+Age,0.006,0.014
+Immunosuppression,-0.034,-0.008
+COPD,-0.034,-0.016
+Tobacco Use,-0.096,-0.067
+Chronic Renal Insufficiency,-0.191,-0.15
+Gender,-0.27,-0.212
+RESULTADO_3,-0.281,-0.236
