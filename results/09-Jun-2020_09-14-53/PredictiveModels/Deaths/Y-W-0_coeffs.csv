@@ -1,0 +1,14 @@
+,SVM-l1,LR-l1
+Age,1.0,1.0
+Chronic Renal Insufficiency,0.145,0.127
+Obesity ,0.06,0.063
+Immunosuppression,0.071,0.062
+Diabetes,0.059,0.058
+Hypertension,0.051,0.046
+Other,0.049,0.038
+COPD,0.022,0.012
+Tobacco Use,0.008,0.006
+Asthma,-0.009,-0.006
+Cardiovascular Disease,-0.009,-0.015
+Pregnant,0.014,-0.073
+Gender,-0.076,-0.078
